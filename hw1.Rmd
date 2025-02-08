@@ -1,0 +1,90 @@
+---
+title: "hw1"
+output: html_document
+date: "2025-02-05"
+---
+
+#upload excel
+
+```{r}
+Typical_Employee_Survey_Data <- read.csv("/Users/lindsey/Desktop/R\ Code/Time\ Series/Typical_Employee_Survey_Data.csv",header = FALSE)
+```
+
+#add header row to dataframe
+
+```{r}
+colnames(Typical_Employee_Survey_Data) <- c("Age", "Gender", "JobSatisfaction", "Characteristic", "YearsEmployed", "PromotionLikelihood", "DecisionMaking", "BudgetaryDecisions", "Proudness", "HigherPay", "WorkplaceRelations")
+```
+
+#print out the 5-point summary and boxplot (numerical columns) for each column
+
+```{r}
+summary(Typical_Employee_Survey_Data$Age)
+boxplot(Typical_Employee_Survey_Data$Age)
+summary(Typical_Employee_Survey_Data$YearsEmployed)
+boxplot(Typical_Employee_Survey_Data$YearsEmployed)
+```
+
+#convert the columns that need to be converted to Factors
+
+```{r}
+Typical_Employee_Survey_Data$Gender <- factor(Typical_Employee_Survey_Data$Gender, labels = c("Male", "Female"))
+Typical_Employee_Survey_Data$JobSatisfaction <- factor(Typical_Employee_Survey_Data$JobSatisfaction, labels = c("Very Satisfied", "Moderately Satisfied", "A Little Dissatisfied", "Very Dissatisfied"))
+Typical_Employee_Survey_Data$Characteristic <- factor(Typical_Employee_Survey_Data$Characteristic, labels = c("High Income", "No Danger of being Fired", "Flexible Hours", "Oppertunities for Advancement", "Enjoying the work"))
+Typical_Employee_Survey_Data$PromotionLikelihood <- factor(Typical_Employee_Survey_Data$PromotionLikelihood, labels = c("Very Likely", "Likely", "Not Sure", "Unlikely", "Very Unlikely"))
+Typical_Employee_Survey_Data$DecisionMaking <- factor(Typical_Employee_Survey_Data$DecisionMaking, labels = c("Always", "Much of the Time", "Sometimes", "Never"))
+Typical_Employee_Survey_Data$BudgetaryDecisions <- factor(Typical_Employee_Survey_Data$BudgetaryDecisions, labels = c("Yes", "No"))
+Typical_Employee_Survey_Data$Proudness <- factor(Typical_Employee_Survey_Data$Proudness, labels = c("Very Proud", "Somewhat Proud", "Indifferent", "Not Proud at All"))
+Typical_Employee_Survey_Data$HigherPay <- factor(Typical_Employee_Survey_Data$HigherPay, labels = c("Very Likely", "Likely", "Not Sure", "Unlikely", "Very Unlikely"))
+Typical_Employee_Survey_Data$WorkplaceRelations <- factor(Typical_Employee_Survey_Data$WorkplaceRelations, labels = c("Very Good", "Good", "Bad", "Very Bad"))
+```
+
+#Plot the right visual for each column
+```{r}
+hist(Typical_Employee_Survey_Data$Age, main = "Age of Employees", col = "blue")
+# This histogram shows the distribution of ages of the company's employees. The graph shows that most employees are between the ages of 30 and 45.
+
+pie(table(Typical_Employee_Survey_Data$Gender), labels = c("Male", "Female"), main = "Employee Gender")
+# This pie chart shows the distribution between male and female within the employees. Looking at the chart, I would say that 55% of the employees are male and 45% are female.
+
+barplot(table(Typical_Employee_Survey_Data$JobSatisfaction), main = c("Job Satisfaction Levels"))
+# The bar chart shows the satisfaction levels of employees. It seems that the majority of employees are moderately or very satisfied.
+
+barplot(table(Typical_Employee_Survey_Data$Characteristic), main = c("Employee Important Characteristics"))
+# This bar chart shows the employees most valued characteristic of their job. The most popular choice is enjoying the work they do.
+
+hist(Typical_Employee_Survey_Data$YearsEmployed, main = "Years Employed", col = "pink")
+# This histogram shows the amount of years each employee has worked for the company. Over 60 employees have been employed for under 5 years.
+
+barplot(table(Typical_Employee_Survey_Data$PromotionLikelihood), main = c("Employee Promotion Likelihood"))
+# This bar chart shows the employees belief of their promotion likelihood. Responses seem to be mixed.
+
+barplot(table(Typical_Employee_Survey_Data$DecisionMaking), main = c("Employee Decision Making"))
+# This bar chart shows the involvement of employees regarding decision making. Most employees either sometimes are involved or most of the time are involved in decision making.
+
+pie(table(Typical_Employee_Survey_Data$BudgetaryDecisions), main = c("Budgetary Decision Making"))
+# This bar chart shows if an employee is included in the company's budgeting decisions. According to the pie chart, around 55% of employees participate in budgetary decisions.
+
+barplot(table(Typical_Employee_Survey_Data$Proudness), main = c("Employee Proudness"))
+# This bar chart shows employee proudness. Most employees are somewhat proud of their job.
+
+barplot(table(Typical_Employee_Survey_Data$HigherPay), main = c("Employee Incentive"))
+# This bar chart shows if an employee was offered higher pay at another firm, the likeliness that each employee would take the other job. The majority of employees are unlikely to leave their current position even if they are offered a higher pay.
+
+barplot(table(Typical_Employee_Survey_Data$WorkplaceRelations), main = c("Employee Workplace Relationships"))
+# This bar chart shows relations in the workplace between coworkers and colleagues. The majority of employees have a good or very good coworker relationships.
+
+```
+
+#Plot scatter plots to show few relationships
+```{r}
+plot(Typical_Employee_Survey_Data$Age,Typical_Employee_Survey_Data$YearsEmployed)
+# There seems to be a positive trend between age and years employed. 
+
+plot(Typical_Employee_Survey_Data$Gender,Typical_Employee_Survey_Data$BudgetaryDecisions)
+# There is a possibility that there is a correlation between gender and budgetary decisions.
+
+plot(Typical_Employee_Survey_Data$Gender,Typical_Employee_Survey_Data$DecisionMaking)
+# There does not seem to be correlation between gender and decision making when it comes to an employee's work.
+```
+
