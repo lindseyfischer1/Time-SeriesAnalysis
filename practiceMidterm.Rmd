@@ -1,0 +1,87 @@
+---
+title: "Practice Midterm"
+output:
+  html_document:
+    df_print: paged
+---
+
+Upload Dataset
+```{r}
+library(fpp2)
+timeSeries <- arrivals[, "US"]
+timeSeries
+```
+
+Time Series Plot
+```{r}
+plot(timeSeries, xlab = "Time", ylab = "Arrivals US to Australia", main = ("Time Series Data"))
+```
+The number of US arrivals to Australia has shown a consistent upward trend over the 30-year period, increasing from around 20-30 arrivals in 1980 to approximately 100-130 arrivals by 2010. The zigzag pattern throughout suggests strong seasonality, with regular peaks and troughs occurring in a consistent pattern, likely reflecting tourist seasons.
+
+Central Tendency
+```{r}
+summary(timeSeries)
+boxplot(timeSeries)
+```
+The median arrivals (85.88 thousand) is very close to the mean (84.85 thousand), suggesting a relatively symmetric distribution of arrivals over time. The data spans from a minimum of 23.72 thousand to a maximum of 136.09 thousand visitors, representing a substantial change over the period. The interquartile range (IQR = 108.98 - 63.95 = 45.03) indicates considerable variability.
+
+
+Decomposition
+```{r}
+ets_forecast <- ets(timeSeries)
+plot(ets_forecast)
+decompose <- decompose(timeSeries) 
+plot(decompose) # tells you if additive or multiplicative 
+decompose$seasonal
+stl_result <- stl(timeSeries, s.window = "periodic")
+plot(stl_result)
+```
+There is definitely seasonality as seen in all three of the different decomposition models. The seasonal section shows this. The decomposition model is additive. The seasonal quarterly indices are Q1: 6.78, Q2: -7.97, Q3: -4.72, and Q4: 5.90. As shown by the seasonal indices, Q1 has the highest values in the time series, and Q2 has the lowest. Q1 sees peak arrivals as tourists from the U.S. travel to Australia for summer vacations, major holidays like Christmas and New Year's, and events like the Australian Open. In Q2, arrivals drop as the holiday season ends, work and school resume, and Australia's autumn brings less favorable travel conditions.
+
+
+```{r}
+seasonalAdjustment <- seasadj(stl_result)
+plot(seasonalAdjustment)
+seasonalAdjustment
+```
+
+```{r}
+plot(timeSeries, ylab = "Arrivals US to Australia")
+lines(seasonalAdjustment, col = "red")
+```
+The time series shows US arrivals to Australia increased significantly from around 30 in 1980 to about 110 by 2010. The black line (actual data) displays clear seasonal fluctuations that grow larger over time, while the red line (seasonally adjusted data) reveals the underlying trend. Key patterns include a steep rise in the late 1980s, gradual growth through the 1990s, a sharp increase around 2000, and relatively stable but fluctuating numbers thereafter.
+
+
+Naive Model
+```{r}
+naive_forecast <- naive(timeSeries,4)
+plot(naive_forecast)
+residuals <- naive_forecast$residuals
+plot(residuals)
+hist(residuals)
+```
+The histogram of residuals displays a roughly bell-shaped distribution centered slightly above zero with a mild positive skew. The highest frequencies occur in the 0 to 10 range (about 45 occurrences) and -10 to 0 range (about 30 occurrences), with tails extending to approximately -30 and 40. This suggests the naive forecasting method generally performs adequately without strong systematic bias, though it tends to slightly under predict more often than over predict. Most errors fall within ±20 units, with the approximately normal distribution indicating the model captures most systematic patterns in the data.
+
+
+```{r}
+plot(timeSeries)
+lines(residuals, col = "red")
+```
+This plot displays the time series of US arrivals to Australia from 1980 to 2010 (black line) with the residuals from a forecasting model shown as red spikes along the bottom. The residuals appear to be larger during specific periods, particularly around 1985-1989, 1990, 2000, and 2010, which correspond to major turning points or unusual patterns in the time series. These larger residuals suggest the forecasting model struggled to predict sudden changes or anomalous events in the data. The relatively small magnitude of most residuals compared to the actual values indicates the model generally performs well, but fails to fully capture abrupt shifts in tourism patterns. The clustering of larger residuals at specific time periods rather than being randomly distributed suggests potential structural changes or external shocks affecting US travel to Australia that weren't adequately captured by the model.
+
+
+```{r}
+Acf(residuals)
+```
+The ACF plot of the series residuals displays significant autocorrelation patterns, with several lags exceeding the significance bounds (blue dashed lines). Notable spikes occur at lags 4, 8, 12, 16, and 20, suggesting a strong seasonal pattern with a period of 4 time units. The negative autocorrelation at lag 1 indicates short-term overcorrection, while the regular pattern of significant positive correlations points to remaining seasonality in the residuals. This indicates that the forecasting model has not fully captured the seasonal components of the time series, and there's still predictable structure in the errors that could be incorporated to improve forecasting accuracy. Including seasonal terms with period 4 in the model would likely enhance its performance.
+
+
+```{r}
+accuracy(naive_forecast)
+```
+
+```{r}
+naive_forecast
+```
+
+The naive forecasting method for US arrivals to Australia uses the last observed value (106.54) as the prediction for all future quarters, shown by the flat blue line extending to 2015. Its accuracy is moderate, with a MAE of 9.69, RMSE of 12.51, and MAPE of 11.83%, while the negative ACF1 value (-0.17) indicates some unaccounted patterns remain. By 2013 Q4, predictions include wide confidence intervals (80%: 70.68-142.40; 95%: 51.70-161.38), reflecting increasing uncertainty over time. This simple approach fails to incorporate the visible seasonal patterns and slight upward trend in the historical data, suggesting that more sophisticated models like moving average or exponential smoothing would likely yield more accurate forecasts for this time series.
