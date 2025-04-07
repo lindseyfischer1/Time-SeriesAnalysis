@@ -1,0 +1,55 @@
+---
+title: "HW5"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+```{r}
+dataset <- read.csv("/Users/lindsey/Desktop/R\ Code/Time\ Series/ItalyUnemployment.csv")
+```
+
+
+```{r}
+library(fpp)
+library(fpp2)
+library(forecast)
+```
+
+
+```{r}
+unemployment_ts <- ts(dataset$unemployment_rate, start = c(2020, 1), frequency = 12)
+unemployment_ts
+summary(unemployment_ts)
+plot(unemployment_ts)
+```
+
+```{r}
+Acf(unemployment_ts)
+Pacf(unemployment_ts)
+
+ARIMA_fit <- auto.arima(unemployment_ts,trace=TRUE, stepwise = FALSE )
+# The best ARRIMA model with the least BIC of 39.69582 is ARIMA(2,1,0)(0,0,1). The Italian unemployment data is best modeled as a trending series (drift) requiring first-differencing for stationarity, with two autoregressive terms capturing short-term dependencies and a seasonal moving average component accounting for yearly patterns.RetryClaude can make mistakes. Please double-check responses.
+```
+```{r}
+Acf(ARIMA_fit$residuals)
+Box.test(residuals(ARIMA_fit), lag=20, type="Ljung")
+plot(residuals(ARIMA_fit))
+hist(ARIMA_fit$residuals)
+tsdiag(ARIMA_fit)
+#The residual analysis shows that the ARIMA(2,1,0)(0,0,1)[12] model with drift is appropriate for the Italian unemployment data, as evidenced by the lack of significant autocorrelation patterns in residuals (confirmed by high Ljung-Box p-value of 0.8836), generally random distribution around zero, and absence of systematic patterns despite some volatility during early 2020.RetryClaude can make mistakes. Please double-check responses.
+```
+
+```{r}
+ARIMA_forecast <- forecast(ARIMA_fit, h=5) 
+
+plot(ARIMA_forecast)
+```
+
+
+```{r}
+accuracy(ARIMA_forecast)
+# The model is highly accurate with a mape of around 2%. The MPE value of 0.04125004 shows the model slightly underestimates the actual unemployment rates, but this bias is negligibly small and suggests excellent forecast accuracy.
+```
+
